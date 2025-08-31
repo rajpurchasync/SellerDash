@@ -414,34 +414,6 @@ const CSAI: React.FC = () => {
           </div>
         </div>
       </div>
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Minimum Confidence Level</label>
-                <input
-                  type="range"
-                  min="50"
-                  max="100"
-                  defaultValue="75"
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>50%</span>
-                  <span>75%</span>
-                  <span>100%</span>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Max Response Time (seconds)</label>
-                <input
-                  type="number"
-                  defaultValue="5"
-                  min="1"
-                  max="30"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
     </div>
   );
 };
