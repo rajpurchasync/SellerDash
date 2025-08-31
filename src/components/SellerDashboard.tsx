@@ -103,7 +103,6 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
             { name: 'My Profile', component: MyProfile, subSection: 'my-profile' },
             { name: 'Company Info', component: BusinessInfo, subSection: 'company-info' },
             { name: 'Membership', component: Membership, subSection: 'membership' }
-            { name: 'Membership', component: Membership, subSection: 'membership' }
           ]
         }
       ]
