@@ -57,7 +57,7 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
     { 
       key: 'products', 
       title: 'Company Info',
-      description: 'Fill company details',
+      description: 'Complete company details',
       icon: Building,
       completed: completedSteps.products
     },
