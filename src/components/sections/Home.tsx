@@ -10,7 +10,8 @@ import {
   Building,
   Package,
   UserPlus,
-  Target
+  Target,
+  User
 } from 'lucide-react';
 
 interface HomeProps {
