@@ -89,7 +89,7 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
       {/* Greeting */}
       <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-6 text-white">
         <h1 className="text-2xl font-bold mb-2">{getGreeting()}, John! 👋</h1>
-        <p className="text-purple-100">Welcome back to your Purchasync dashboard. Here's what's happening with your business today.</p>
+        <p className="text-purple-100">Welcome to your dashboard.</p>
       </div>
 
       {/* Sticky Profile Completion - Ultra Minimal */}
