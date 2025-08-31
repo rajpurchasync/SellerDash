@@ -1,5 +1,5 @@
 import React from 'react';
-import { Store, TrendingUp, Users, Star, ShoppingCart, Eye } from 'lucide-react';
+import { Store, TrendingUp, Users, Star, ShoppingCart, Eye, Globe } from 'lucide-react';
 
 const Marketplace: React.FC = () => {
   const marketplaceStats = [
