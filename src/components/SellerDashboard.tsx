@@ -86,7 +86,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
           count: 8,
           subItems: [
             { name: 'RFQ', component: Leads, subSection: 'rfq' },
-            { name: 'Sample', component: Leads, subSection: 'sample' }
+            { name: 'Sample', component: Leads, subSection: 'sample' },
+            { name: 'Enquiries', component: Leads, subSection: 'enquiries' }
           ]
         },
         { name: 'messages', icon: MessageSquare, component: Messages, count: 12 },
@@ -115,7 +116,15 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
             { name: 'Pricing', component: Catalogue, activeTab: 'pricing' }
           ]
         },
-        { name: 'marketing', icon: Megaphone, component: Marketing }
+        { 
+          name: 'marketing', 
+          icon: Megaphone, 
+          component: Marketing,
+          subItems: [
+            { name: 'Promotions & Deals', component: Marketing, subSection: 'promotions' },
+            { name: 'Affiliate Marketing', component: Marketing, subSection: 'affiliates' }
+          ]
+        }
       ]
     }
   ];
@@ -155,13 +164,13 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     if (activeSection === 'customers') return <Customers />;
     if (activeSection === 'messages') return <Messages />;
     if (activeSection === 'profile') return <Profile />;
-    if (activeSection === 'marketing') return <Marketing />;
     if (activeSection === 'cs-ai') return <CSAI />;
     if (activeSection === 'todos') return <ToDos />;
 
     // Handle leads sub-sections
     if (activeSection === 'leads-rfq') return <Leads subSection="rfq" />;
     if (activeSection === 'leads-sample') return <Leads subSection="sample" />;
+    if (activeSection === 'leads-enquiries') return <Leads subSection="enquiries" />;
     if (activeSection === 'leads') return <Leads />;
 
     // Handle profile sub-sections
@@ -173,6 +182,11 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     if (activeSection === 'catalogue-variants') return <Catalogue activeTab="variants" />;
     if (activeSection === 'catalogue-pricing') return <Catalogue activeTab="pricing" />;
     if (activeSection === 'catalogue') return <Catalogue />;
+
+    // Handle marketing sub-sections
+    if (activeSection === 'marketing-promotions') return <Marketing subSection="promotions" />;
+    if (activeSection === 'marketing-affiliates') return <Marketing subSection="affiliates" />;
+    if (activeSection === 'marketing') return <Marketing />;
 
     // Default to home
     return <HomeSection profileStatus={profileStatus} />;
@@ -333,7 +347,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
         </div>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-32 lg:pb-8">
           {renderContent()}
         </main>
 

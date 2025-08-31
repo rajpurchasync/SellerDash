@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 const Invited: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('ongoing');
+
   const invitations = [
     {
       id: 1,
@@ -26,6 +28,14 @@ const Invited: React.FC = () => {
       inviterRole: 'Operations Manager',
       invitedDate: '2024-01-10',
       status: 'declined'
+    },
+    {
+      id: 4,
+      companyName: 'Cafe Central - Austin, TX, USA',
+      inviterName: 'David Rodriguez',
+      inviterRole: 'Manager',
+      invitedDate: '2024-01-08',
+      status: 'pending'
     }
   ];
 
@@ -55,6 +65,14 @@ const Invited: React.FC = () => {
     }
   };
 
+  const filteredInvitations = invitations.filter(invitation => {
+    if (activeTab === 'ongoing') {
+      return invitation.status === 'pending';
+    } else {
+      return invitation.status === 'accepted' || invitation.status === 'declined';
+    }
+  });
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -68,9 +86,35 @@ const Invited: React.FC = () => {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="border-b border-gray-200">
+        <nav className="flex space-x-8">
+          <button
+            onClick={() => setActiveTab('ongoing')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'ongoing'
+                ? 'border-purple-500 text-purple-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Ongoing ({invitations.filter(inv => inv.status === 'pending').length})
+          </button>
+          <button
+            onClick={() => setActiveTab('closed')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'closed'
+                ? 'border-purple-500 text-purple-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Closed ({invitations.filter(inv => inv.status === 'accepted' || inv.status === 'declined').length})
+          </button>
+        </nav>
+      </div>
+
       {/* Invitations List */}
       <div className="space-y-3 sm:space-y-4">
-        {invitations.map((invitation) => (
+        {filteredInvitations.map((invitation) => (
           <div key={invitation.id} className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
             <div className="flex flex-col space-y-4">
               <div className="flex items-start justify-between">
@@ -109,13 +153,18 @@ const Invited: React.FC = () => {
       </div>
 
       {/* Empty State */}
-      {invitations.length === 0 && (
+      {filteredInvitations.length === 0 && (
         <div className="text-center py-12">
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Calendar className="w-6 h-6 text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No invitations yet</h3>
-          <p className="text-gray-600">You'll see business network invitations here when you receive them.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No {activeTab} invitations</h3>
+          <p className="text-gray-600">
+            {activeTab === 'ongoing' 
+              ? "You don't have any pending invitations at the moment." 
+              : "You don't have any closed invitations yet."
+            }
+          </p>
         </div>
       )}
     </div>

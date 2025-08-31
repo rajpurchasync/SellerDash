@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Mail, Search, Filter, Archive, Trash2, Star, Clock, Paperclip } from 'lucide-react';
+import { Mail, Search, Filter, Archive, Trash2, Star, Clock, Paperclip, Calendar, MessageCircle } from 'lucide-react';
 
 const Inbox: React.FC = () => {
   const [selectedEmails, setSelectedEmails] = useState<number[]>([]);
   const [filter, setFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   const emails = [
     {
@@ -13,10 +16,12 @@ const Inbox: React.FC = () => {
       subject: 'RFQ: Premium Bed Linens - Urgent',
       preview: 'We need quotes for 500 sets of premium bed linens for our new wing opening...',
       time: '2 hours ago',
+      date: '2024-01-18',
       isRead: false,
       isStarred: true,
       hasAttachment: true,
-      priority: 'high'
+      priority: 'high',
+      type: 'email'
     },
     {
       id: 2,
@@ -25,10 +30,12 @@ const Inbox: React.FC = () => {
       subject: 'Weekly Order Confirmation',
       preview: 'Please confirm the weekly order for fresh ingredients as discussed...',
       time: '4 hours ago',
+      date: '2024-01-18',
       isRead: true,
       isStarred: false,
       hasAttachment: false,
-      priority: 'medium'
+      priority: 'medium',
+      type: 'whatsapp'
     },
     {
       id: 3,
@@ -37,10 +44,12 @@ const Inbox: React.FC = () => {
       subject: 'Sample Request: Organic Coffee Beans',
       preview: 'We would like to request samples of your organic coffee bean varieties...',
       time: '1 day ago',
+      date: '2024-01-17',
       isRead: false,
       isStarred: false,
       hasAttachment: true,
-      priority: 'low'
+      priority: 'low',
+      type: 'email'
     },
     {
       id: 4,
@@ -49,10 +58,12 @@ const Inbox: React.FC = () => {
       subject: 'Payment Confirmation - Invoice #12345',
       preview: 'This is to confirm that payment has been processed for invoice #12345...',
       time: '2 days ago',
+      date: '2024-01-16',
       isRead: true,
       isStarred: true,
       hasAttachment: false,
-      priority: 'medium'
+      priority: 'medium',
+      type: 'whatsapp'
     }
   ];
 
@@ -65,8 +76,12 @@ const Inbox: React.FC = () => {
   };
 
   const toggleStar = (emailId: number) => {
-    // Handle star toggle logic
     console.log(`Toggle star for email ${emailId}`);
+  };
+
+  const handleCustomerClick = (sender: string) => {
+    console.log(`Opening customer history for: ${sender}`);
+    // This would navigate to customer details/history page
   };
 
   const getPriorityColor = (priority: string) => {
@@ -82,17 +97,29 @@ const Inbox: React.FC = () => {
     }
   };
 
-  const filteredEmails = emails.filter(email => {
-    switch (filter) {
-      case 'unread':
-        return !email.isRead;
-      case 'starred':
-        return email.isStarred;
-      case 'high':
-        return email.priority === 'high';
+  const getTypeBadge = (type: string) => {
+    switch (type) {
+      case 'email':
+        return <Mail className="w-3 h-3 text-blue-600" />;
+      case 'whatsapp':
+        return <MessageCircle className="w-3 h-3 text-green-600" />;
       default:
-        return true;
+        return <Mail className="w-3 h-3 text-gray-600" />;
     }
+  };
+
+  const filteredEmails = emails.filter(email => {
+    const matchesStatus = filter === 'all' || 
+                         (filter === 'unread' && !email.isRead) ||
+                         (filter === 'starred' && email.isStarred) ||
+                         (filter === 'high' && email.priority === 'high');
+    
+    const matchesType = typeFilter === 'all' || email.type === typeFilter;
+    
+    const matchesDateRange = (!fromDate || email.date >= fromDate) && 
+                            (!toDate || email.date <= toDate);
+    
+    return matchesStatus && matchesType && matchesDateRange;
   });
 
   return (
@@ -103,16 +130,21 @@ const Inbox: React.FC = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Inbox</h1>
           <p className="text-sm text-gray-600 mt-1">Manage your business communications</p>
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500">
-            {emails.filter(e => !e.isRead).length} unread
-          </span>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+              {emails.filter(e => !e.isRead).length} unread
+            </span>
+            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+              {emails.filter(e => e.isStarred).length} starred
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-        <div className="relative flex-1">
+      <div className="space-y-3">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
@@ -120,7 +152,8 @@ const Inbox: React.FC = () => {
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
-        <div className="flex space-x-2">
+        
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
@@ -131,6 +164,32 @@ const Inbox: React.FC = () => {
             <option value="starred">Starred</option>
             <option value="high">High Priority</option>
           </select>
+          
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+          >
+            <option value="all">All Types</option>
+            <option value="email">Email</option>
+            <option value="whatsapp">WhatsApp</option>
+          </select>
+          
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+            placeholder="From Date"
+          />
+          
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+            placeholder="To Date"
+          />
         </div>
       </div>
 
@@ -178,10 +237,14 @@ const Inbox: React.FC = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <h3 className={`text-sm ${!email.isRead ? 'font-semibold' : 'font-medium'} text-gray-900 truncate`}>
+                    <button
+                      onClick={() => handleCustomerClick(email.sender)}
+                      className={`text-sm ${!email.isRead ? 'font-semibold' : 'font-medium'} text-purple-600 hover:text-purple-800 transition-colors truncate`}
+                    >
                       {email.sender}
-                    </h3>
+                    </button>
                     {email.hasAttachment && <Paperclip className="w-3 h-3 text-gray-400" />}
+                    {getTypeBadge(email.type)}
                   </div>
                   <div className="flex items-center space-x-2">
                     <Clock className="w-3 h-3 text-gray-400" />

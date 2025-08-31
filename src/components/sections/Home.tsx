@@ -32,10 +32,10 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
   };
 
   const kpiData = [
-    { label: 'Total Revenue', value: '$24,580', change: '+12%', icon: DollarSign, color: 'text-green-600' },
-    { label: 'Active Customers', value: '156', change: '+8%', icon: Users, color: 'text-blue-600' },
-    { label: 'Orders', value: '89', change: '+15%', icon: ShoppingCart, color: 'text-purple-600' },
-    { label: 'Profile Views', value: '1,234', change: '+23%', icon: Eye, color: 'text-orange-600' }
+    { label: 'Total Leads', value: '156', change: '+8%', icon: Target, color: 'text-blue-600' },
+    { label: 'Total RFQ Value', value: '$89,450', change: '+15%', icon: DollarSign, color: 'text-green-600' },
+    { label: 'Total Profile Views', value: '1,234', change: '+23%', icon: Eye, color: 'text-orange-600' },
+    { label: 'Active Customers', value: '89', change: '+12%', icon: Users, color: 'text-purple-600' }
   ];
 
   const recentActivity = [
@@ -50,19 +50,19 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
       key: 'businessInfo', 
       title: 'My Profile', 
       description: 'Complete your personal profile',
-      icon: Building,
+      icon: User,
       completed: completedSteps.businessInfo
     },
     { 
       key: 'products', 
-      title: 'Company Info', 
+      title: 'Company Info',
       description: 'Complete your company information',
       icon: Building,
       completed: completedSteps.products
     },
     { 
       key: 'customers', 
-      title: 'Point of Sale', 
+      title: 'Point of Sale',
       description: 'Configure your POS settings',
       icon: Target,
       completed: completedSteps.customers
@@ -120,11 +120,6 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
                 <div className="absolute inset-0 bg-white opacity-30 animate-pulse rounded-full"></div>
                 <div className="absolute right-0 top-0 h-full w-1 bg-white opacity-50 rounded-full"></div>
               </div>
-            </div>
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>Started</span>
-              <span>In Progress</span>
-              <span>Complete</span>
             </div>
           </div>
           

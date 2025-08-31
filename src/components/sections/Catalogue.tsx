@@ -22,7 +22,6 @@ interface CatalogueProps {
 }
 
 const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
-  const [activeTab, setActiveTab] = useState(propActiveTab || 'products');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [isAddVariantModalOpen, setIsAddVariantModalOpen] = useState(false);
@@ -34,17 +33,16 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
   const [newVariant, setNewVariant] = useState({
     productId: '',
     variantType: '',
-    variants: [''],
-    prices: ['']
+    variants: ['']
   });
 
   const [newPricing, setNewPricing] = useState({
     productId: '',
     location: '',
     currency: 'USD',
-    basePrice: '',
-    bulkPrice: '',
-    minQuantity: ''
+    pricingTiers: [
+      { minQuantity: '', maxQuantity: '', pricePerUnit: '' }
+    ]
   });
 
   const products = [
@@ -100,16 +98,14 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
       productId: 1,
       productName: 'Premium Egyptian Cotton Towels',
       variantType: 'Size',
-      variants: ['Small (30x50cm)', 'Medium (50x90cm)', 'Large (70x140cm)'],
-      prices: ['$35.00', '$45.00', '$65.00']
+      variants: ['Small (30x50cm)', 'Medium (50x90cm)', 'Large (70x140cm)']
     },
     {
       id: 2,
       productId: 2,
       productName: 'Organic Coffee Beans - Premium Blend',
       variantType: 'Weight',
-      variants: ['250g', '500g', '1kg'],
-      prices: ['$15.50', '$28.50', '$52.00']
+      variants: ['250g', '500g', '1kg']
     }
   ];
 
@@ -120,19 +116,11 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
       productName: 'Premium Egyptian Cotton Towels',
       location: 'New York',
       currency: 'USD',
-      basePrice: '$45.00',
-      bulkPrice: '$38.00',
-      minQuantity: 50
-    },
-    {
-      id: 2,
-      productId: 1,
-      productName: 'Premium Egyptian Cotton Towels',
-      location: 'London',
-      currency: 'GBP',
-      basePrice: '£35.00',
-      bulkPrice: '£29.00',
-      minQuantity: 50
+      pricingTiers: [
+        { minQuantity: '1', maxQuantity: '49', pricePerUnit: '$45.00' },
+        { minQuantity: '50', maxQuantity: '99', pricePerUnit: '$42.00' },
+        { minQuantity: '100', maxQuantity: '', pricePerUnit: '$38.00' }
+      ]
     }
   ];
 
@@ -154,23 +142,44 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
   const addVariantField = () => {
     setNewVariant(prev => ({
       ...prev,
-      variants: [...prev.variants, ''],
-      prices: [...prev.prices, '']
+      variants: [...prev.variants, '']
     }));
   };
 
   const removeVariantField = (index: number) => {
     setNewVariant(prev => ({
       ...prev,
-      variants: prev.variants.filter((_, i) => i !== index),
-      prices: prev.prices.filter((_, i) => i !== index)
+      variants: prev.variants.filter((_, i) => i !== index)
     }));
   };
 
-  const updateVariantField = (index: number, field: 'variants' | 'prices', value: string) => {
+  const updateVariantField = (index: number, value: string) => {
     setNewVariant(prev => ({
       ...prev,
-      [field]: prev[field].map((item, i) => i === index ? value : item)
+      variants: prev.variants.map((item, i) => i === index ? value : item)
+    }));
+  };
+
+  const addPricingTier = () => {
+    setNewPricing(prev => ({
+      ...prev,
+      pricingTiers: [...prev.pricingTiers, { minQuantity: '', maxQuantity: '', pricePerUnit: '' }]
+    }));
+  };
+
+  const removePricingTier = (index: number) => {
+    setNewPricing(prev => ({
+      ...prev,
+      pricingTiers: prev.pricingTiers.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updatePricingTier = (index: number, field: string, value: string) => {
+    setNewPricing(prev => ({
+      ...prev,
+      pricingTiers: prev.pricingTiers.map((tier, i) => 
+        i === index ? { ...tier, [field]: value } : tier
+      )
     }));
   };
 
@@ -180,8 +189,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
     setNewVariant({
       productId: '',
       variantType: '',
-      variants: [''],
-      prices: ['']
+      variants: ['']
     });
   };
 
@@ -192,9 +200,9 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
       productId: '',
       location: '',
       currency: 'USD',
-      basePrice: '',
-      bulkPrice: '',
-      minQuantity: ''
+      pricingTiers: [
+        { minQuantity: '', maxQuantity: '', pricePerUnit: '' }
+      ]
     });
   };
 
@@ -208,17 +216,34 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
     setIsManagePricingModalOpen(true);
   };
 
+  const getPageTitle = () => {
+    switch (propActiveTab) {
+      case 'products':
+        return 'Product List';
+      case 'variants':
+        return 'Variants Management';
+      case 'pricing':
+        return 'Price Management';
+      default:
+        return 'Catalogue';
+    }
+  };
+
+  const getPageDescription = () => {
+    switch (propActiveTab) {
+      case 'products':
+        return 'Manage your product catalogue';
+      case 'variants':
+        return 'Create and manage product variants';
+      case 'pricing':
+        return 'Set up pricing rules and tiers';
+      default:
+        return 'Manage your product catalogue and pricing';
+    }
+  };
+
   const renderProductList = () => (
     <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <h3 className="text-lg font-medium text-gray-900">Product List</h3>
-        <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-          <Plus className="w-4 h-4" />
-          <span>Add Product</span>
-        </button>
-      </div>
-
       {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
         <div className="relative flex-1">
@@ -370,17 +395,6 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
 
   const renderVariants = () => (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <h3 className="text-lg font-medium text-gray-900">Variants Management</h3>
-        <button
-          onClick={() => setIsAddVariantModalOpen(true)}
-          className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Variants</span>
-        </button>
-      </div>
-
       {/* Product List for Variants */}
       <div className="space-y-3">
         {products.map((product) => (
@@ -453,7 +467,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <label className="block text-sm font-medium text-gray-700">Variants & Prices</label>
+                    <label className="block text-sm font-medium text-gray-700">Variants</label>
                     <button
                       onClick={addVariantField}
                       className="text-purple-600 hover:text-purple-700 text-sm font-medium"
@@ -463,20 +477,13 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
                   </div>
                   <div className="space-y-3">
                     {newVariant.variants.map((variant, index) => (
-                      <div key={index} className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                      <div key={index} className="flex items-center space-x-3">
                         <input
                           type="text"
                           value={variant}
-                          onChange={(e) => updateVariantField(index, 'variants', e.target.value)}
+                          onChange={(e) => updateVariantField(index, e.target.value)}
                           placeholder="Variant name"
-                          className="w-full flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                        <input
-                          type="text"
-                          value={newVariant.prices[index]}
-                          onChange={(e) => updateVariantField(index, 'prices', e.target.value)}
-                          placeholder="Price"
-                          className="w-full sm:w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
                         {newVariant.variants.length > 1 && (
                           <button
@@ -542,10 +549,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {variant.variants.map((variantOption, index) => (
                         <div key={index} className="bg-gray-50 rounded-lg p-3">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-900">{variantOption}</span>
-                            <span className="text-sm font-semibold text-purple-600">{variant.prices[index]}</span>
-                          </div>
+                          <span className="text-sm font-medium text-gray-900">{variantOption}</span>
                         </div>
                       ))}
                     </div>
@@ -573,17 +577,6 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
 
   const renderPricing = () => (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <h3 className="text-lg font-medium text-gray-900">Price Management</h3>
-        <button
-          onClick={() => setIsAddPricingModalOpen(true)}
-          className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Pricing</span>
-        </button>
-      </div>
-
       {/* Product List for Pricing */}
       <div className="space-y-3">
         {products.map((product) => (
@@ -618,7 +611,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
       {/* Add Pricing Modal */}
       {isAddPricingModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-900">Create Product Pricing</h2>
@@ -673,38 +666,53 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Base Price</label>
-                    <input
-                      type="text"
-                      value={newPricing.basePrice}
-                      onChange={(e) => setNewPricing({...newPricing, basePrice: e.target.value})}
-                      placeholder="0.00"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Bulk Price</label>
-                    <input
-                      type="text"
-                      value={newPricing.bulkPrice}
-                      onChange={(e) => setNewPricing({...newPricing, bulkPrice: e.target.value})}
-                      placeholder="0.00"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Quantity</label>
-                  <input
-                    type="number"
-                    value={newPricing.minQuantity}
-                    onChange={(e) => setNewPricing({...newPricing, minQuantity: e.target.value})}
-                    placeholder="1"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-sm font-medium text-gray-700">Volume-Based Pricing Tiers</label>
+                    <button
+                      onClick={addPricingTier}
+                      className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    >
+                      + Add Tier
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {newPricing.pricingTiers.map((tier, index) => (
+                      <div key={index} className="grid grid-cols-3 gap-3 items-center">
+                        <input
+                          type="number"
+                          value={tier.minQuantity}
+                          onChange={(e) => updatePricingTier(index, 'minQuantity', e.target.value)}
+                          placeholder="Min Qty"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        <input
+                          type="number"
+                          value={tier.maxQuantity}
+                          onChange={(e) => updatePricingTier(index, 'maxQuantity', e.target.value)}
+                          placeholder="Max Qty (optional)"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={tier.pricePerUnit}
+                            onChange={(e) => updatePricingTier(index, 'pricePerUnit', e.target.value)}
+                            placeholder="Price per unit"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          />
+                          {newPricing.pricingTiers.length > 1 && (
+                            <button
+                              onClick={() => removePricingTier(index)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -751,9 +759,7 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Currency</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Base Price</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bulk Price</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Min Qty</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pricing Tiers</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                   </thead>
@@ -762,9 +768,15 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
                       <tr key={price.id} className="hover:bg-gray-50">
                         <td className="px-4 py-4 text-sm text-gray-900">{price.location}</td>
                         <td className="px-4 py-4 text-sm text-gray-900">{price.currency}</td>
-                        <td className="px-4 py-4 text-sm font-semibold text-purple-600">{price.basePrice}</td>
-                        <td className="px-4 py-4 text-sm font-semibold text-green-600">{price.bulkPrice}</td>
-                        <td className="px-4 py-4 text-sm text-gray-900">{price.minQuantity}</td>
+                        <td className="px-4 py-4">
+                          <div className="space-y-1">
+                            {price.pricingTiers.map((tier, index) => (
+                              <div key={index} className="text-xs text-gray-600">
+                                {tier.minQuantity}-{tier.maxQuantity || '∞'}: {tier.pricePerUnit}
+                              </div>
+                            ))}
+                          </div>
+                        </td>
                         <td className="px-4 py-4 text-sm">
                           <div className="flex space-x-2">
                             <button className="text-blue-600 hover:text-blue-800">Edit</button>
@@ -798,54 +810,50 @@ const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Catalogue</h1>
-        <p className="text-sm text-gray-600 mt-1">Manage your product catalogue and pricing</p>
-      </div>
-
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="flex space-x-4 sm:space-x-8 overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-              activeTab === 'products'
-                ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <List className="w-4 h-4 inline mr-2" />
-            Product List
-          </button>
-          <button
-            onClick={() => setActiveTab('variants')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-              activeTab === 'variants'
-                ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <Settings className="w-4 h-4 inline mr-2" />
-            Variants
-          </button>
-          <button
-            onClick={() => setActiveTab('pricing')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-              activeTab === 'pricing'
-                ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <DollarSign className="w-4 h-4 inline mr-2" />
-            Pricing
-          </button>
-        </nav>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{getPageTitle()}</h1>
+          <p className="text-sm text-gray-600 mt-1">{getPageDescription()}</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          {propActiveTab === 'variants' && (
+            <button
+              onClick={() => setIsAddVariantModalOpen(true)}
+              className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Create Variants</span>
+              <span className="sm:hidden">Add</span>
+            </button>
+          )}
+          {propActiveTab === 'pricing' && (
+            <button
+              onClick={() => setIsAddPricingModalOpen(true)}
+              className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Create Pricing</span>
+              <span className="sm:hidden">Add</span>
+            </button>
+          )}
+          {propActiveTab === 'products' && (
+            <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Add Product</span>
+              <span className="sm:hidden">Add</span>
+            </button>
+          )}
+          <span className="text-sm text-gray-500">
+            {getCurrentData().length} items
+          </span>
+        </div>
       </div>
 
       {/* Content based on activeTab */}
-      {activeTab === 'products' && renderProductList()}
-      {activeTab === 'variants' && renderVariants()}
-      {activeTab === 'pricing' && renderPricing()}
+      {propActiveTab === 'products' && renderProductList()}
+      {propActiveTab === 'variants' && renderVariants()}
+      {propActiveTab === 'pricing' && renderPricing()}
+      {!propActiveTab && renderProductList()}
     </div>
   );
 };
