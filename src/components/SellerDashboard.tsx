@@ -71,6 +71,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     {
       items: [
         { name: 'home', icon: Home, component: HomeSection },
+        { name: 'todos', icon: CheckSquare, component: ToDos },
         { name: 'invited', icon: UserPlus, component: Invited },
         { name: 'inbox', icon: Mail, component: Inbox }
       ]
@@ -124,7 +125,9 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
             { name: 'Promotions & Deals', component: Marketing, subSection: 'promotions' },
             { name: 'Affiliate Marketing', component: Marketing, subSection: 'affiliates' }
           ]
-        }
+        },
+        { name: 'cs-ai', icon: Bot, component: CSAI },
+        { name: 'online-store', icon: Store, component: Marketplace }
       ]
     }
   ];
@@ -166,6 +169,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     if (activeSection === 'profile') return <Profile />;
     if (activeSection === 'cs-ai') return <CSAI />;
     if (activeSection === 'todos') return <ToDos />;
+    if (activeSection === 'online-store') return <Marketplace />;
 
     // Handle leads sub-sections
     if (activeSection === 'leads-rfq') return <Leads subSection="rfq" />;
