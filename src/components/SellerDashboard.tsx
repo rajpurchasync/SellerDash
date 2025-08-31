@@ -180,8 +180,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     if (activeSection === 'cs-ai') return <CSAI />;
     if (activeSection === 'todos') return <ToDos />;
     if (activeSection === 'online-store') return <Marketplace subSection="overview" />;
-    if (activeSection === 'online-store-overview') return <Marketplace subSection="overview" />;
-    if (activeSection === 'online-store-settings') return <Marketplace subSection="settings" />;
+    if (activeSection === 'online-store-Store Overview') return <Marketplace subSection="overview" />;
+    if (activeSection === 'online-store-Store Settings') return <Marketplace subSection="settings" />;
 
     // Handle leads sub-sections
     if (activeSection === 'leads-rfq') return <Leads subSection="rfq" />;
