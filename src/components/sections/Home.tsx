@@ -192,21 +192,25 @@ const Home: React.FC<HomeProps> = ({ profileStatus, isOnlineStoreConfigComplete 
                   }`} />
                   <div>
                     <p className="text-xs sm:text-sm font-medium text-gray-900">{activity.message}</p>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Home</h1>
-          <p className="text-sm text-gray-600 mt-1">Your dashboard overview</p>
+                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                  </div>
                 </div>
-        <div className="flex items-center space-x-4">
-          <button
-            disabled={!isOnlineStoreConfigComplete}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-              isOnlineStoreConfigComplete
-                ? 'bg-purple-600 text-white hover:bg-purple-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            <Store className="w-4 h-4" />
-            <span>Preview Store</span>
-          </button>
+                <div className="flex items-center space-x-4">
+                  <button
+                    disabled={!isOnlineStoreConfigComplete}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                      isOnlineStoreConfigComplete
+                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    <Store className="w-4 h-4" />
+                    <span>Preview Store</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
