@@ -17,7 +17,9 @@ import {
   FileText,
   CheckSquare,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  DollarSign,
+  BarChart3
 } from 'lucide-react';
 
 // Import all section components
@@ -28,6 +30,7 @@ import Customers from './sections/Customers';
 import Leads from './sections/Leads';
 import Messages from './sections/Messages';
 import Profile from './sections/Profile';
+import MyProfile from './sections/MyProfile';
 import Catalogue from './sections/Catalogue';
 import Marketplace from './sections/Marketplace';
 import Marketing from './sections/Marketing';
@@ -48,6 +51,7 @@ interface MenuItem {
     name: string;
     component: React.ComponentType<any>;
     subSection?: string;
+    activeTab?: string;
   }[];
 }
 
@@ -81,22 +85,37 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
           component: Leads,
           count: 8,
           subItems: [
-            { name: 'rfq', component: Leads, subSection: 'rfq' },
-            { name: 'sample', component: Leads, subSection: 'sample' }
+            { name: 'RFQ', component: Leads, subSection: 'rfq' },
+            { name: 'Sample', component: Leads, subSection: 'sample' }
           ]
         },
         { name: 'messages', icon: MessageSquare, component: Messages, count: 12 },
-        { name: 'profile', icon: User, component: Profile }
+        { 
+          name: 'profile', 
+          icon: User, 
+          component: Profile,
+          subItems: [
+            { name: 'My Profile', component: MyProfile },
+            { name: 'Company Info', component: BusinessInfo }
+          ]
+        }
       ]
     },
     // Section 3 - Marketplace
     {
       title: 'Marketplace',
       items: [
-        { name: 'catalogue', icon: Package, component: Catalogue },
-        { name: 'marketplace', icon: Store, component: Marketplace },
+        { 
+          name: 'catalogue', 
+          icon: Package, 
+          component: Catalogue,
+          subItems: [
+            { name: 'Product List', component: Catalogue, activeTab: 'products' },
+            { name: 'Variants', component: Catalogue, activeTab: 'variants' },
+            { name: 'Pricing', component: Catalogue, activeTab: 'pricing' }
+          ]
+        },
         { name: 'marketing', icon: Megaphone, component: Marketing },
-        { name: 'business-info', icon: Building, component: BusinessInfo },
         { name: 'cs-ai', icon: Bot, component: CSAI }
       ]
     }
@@ -111,45 +130,50 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     { name: 'profile', icon: User, component: Profile }
   ];
 
-  const handleMenuClick = (itemName: string, hasSubItems: boolean = false, subSection?: string) => {
+  const handleMenuClick = (itemName: string, hasSubItems: boolean = false, subSection?: string, activeTab?: string) => {
     if (hasSubItems) {
       // Toggle submenu
       setOpenSubMenu(openSubMenu === itemName ? null : itemName);
     } else {
       // Set active section and close mobile menu
-      setActiveSection(subSection ? `${itemName}-${subSection}` : itemName);
+      let sectionKey = itemName;
+      if (subSection) {
+        sectionKey = `${itemName}-${subSection}`;
+      } else if (activeTab) {
+        sectionKey = `${itemName}-${activeTab}`;
+      }
+      setActiveSection(sectionKey);
       setIsMobileMenuOpen(false);
       setOpenSubMenu(null);
     }
   };
 
   const renderContent = () => {
-    // Find the component to render based on activeSection
-    for (const section of menuSections) {
-      for (const item of section.items) {
-        if (item.name === activeSection) {
-          const Component = item.component;
-          return <Component profileStatus={profileStatus} />;
-        }
-        
-        if (item.subItems) {
-          for (const subItem of item.subItems) {
-            if (`${item.name}-${subItem.subSection}` === activeSection) {
-              const Component = subItem.component;
-              return <Component profileStatus={profileStatus} subSection={subItem.subSection} />;
-            }
-          }
-        }
-      }
-    }
+    // Handle direct matches first
+    if (activeSection === 'home') return <HomeSection profileStatus={profileStatus} />;
+    if (activeSection === 'invited') return <Invited />;
+    if (activeSection === 'inbox') return <Inbox />;
+    if (activeSection === 'customers') return <Customers />;
+    if (activeSection === 'messages') return <Messages />;
+    if (activeSection === 'profile') return <Profile />;
+    if (activeSection === 'marketing') return <Marketing />;
+    if (activeSection === 'cs-ai') return <CSAI />;
+    if (activeSection === 'todos') return <ToDos />;
 
-    // Check bottom nav items
-    for (const item of bottomNavItems) {
-      if (item.name === activeSection) {
-        const Component = item.component;
-        return <Component profileStatus={profileStatus} />;
-      }
-    }
+    // Handle leads sub-sections
+    if (activeSection === 'leads-rfq') return <Leads subSection="rfq" />;
+    if (activeSection === 'leads-sample') return <Leads subSection="sample" />;
+    if (activeSection === 'leads') return <Leads />;
+
+    // Handle profile sub-sections
+    if (activeSection === 'profile-my-profile') return <MyProfile />;
+    if (activeSection === 'profile-company-info') return <BusinessInfo />;
+
+    // Handle catalogue sub-sections
+    if (activeSection === 'catalogue-products') return <Catalogue activeTab="products" />;
+    if (activeSection === 'catalogue-variants') return <Catalogue activeTab="variants" />;
+    if (activeSection === 'catalogue-pricing') return <Catalogue activeTab="pricing" />;
+    if (activeSection === 'catalogue') return <Catalogue />;
 
     // Default to home
     return <HomeSection profileStatus={profileStatus} />;
@@ -196,14 +220,14 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
             {item.subItems!.map((subItem) => (
               <button
                 key={subItem.name}
-                onClick={() => handleMenuClick(item.name, false, subItem.subSection)}
+                onClick={() => handleMenuClick(item.name, false, subItem.subSection, subItem.activeTab)}
                 className={`w-full flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
-                  activeSection === `${item.name}-${subItem.subSection}`
+                  activeSection === `${item.name}-${subItem.subSection || subItem.activeTab}`
                     ? 'bg-purple-100 text-purple-700'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <span className="capitalize">{subItem.name}</span>
+                <span>{subItem.name}</span>
               </button>
             ))}
           </div>
@@ -310,27 +334,29 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
         </div>
 
         {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8">
           {renderContent()}
         </main>
 
-        {/* Mobile bottom navigation */}
-        <div className="lg:hidden bg-white border-t border-gray-200 px-4 py-2">
-          <div className="flex justify-around">
-            {bottomNavItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => handleMenuClick(item.name)}
-                className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
-                  activeSection === item.name
-                    ? 'text-purple-600'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="text-xs font-medium capitalize">{item.name}</span>
-              </button>
-            ))}
+        {/* Mobile bottom navigation - Floating */}
+        <div className="lg:hidden fixed bottom-4 left-4 right-4 z-40">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 px-4 py-3">
+            <div className="flex justify-around">
+              {bottomNavItems.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => handleMenuClick(item.name)}
+                  className={`flex flex-col items-center space-y-1 p-2 rounded-xl transition-all duration-200 ${
+                    activeSection === item.name
+                      ? 'text-purple-600 bg-purple-50 scale-105'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span className="text-xs font-medium capitalize">{item.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

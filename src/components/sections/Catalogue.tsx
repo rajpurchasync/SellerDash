@@ -10,13 +10,37 @@ import {
   Edit,
   Trash2,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  X,
+  DollarSign
 } from 'lucide-react';
 
-const Catalogue: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('products');
+interface CatalogueProps {
+  activeTab?: string;
+}
+
+const Catalogue: React.FC<CatalogueProps> = ({ activeTab: propActiveTab }) => {
+  const [activeTab, setActiveTab] = useState(propActiveTab || 'products');
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [isAddVariantModalOpen, setIsAddVariantModalOpen] = useState(false);
+  const [isAddPricingModalOpen, setIsAddPricingModalOpen] = useState(false);
+
+  const [newVariant, setNewVariant] = useState({
+    productId: '',
+    variantType: '',
+    variants: [''],
+    prices: ['']
+  });
+
+  const [newPricing, setNewPricing] = useState({
+    productId: '',
+    location: '',
+    currency: 'USD',
+    basePrice: '',
+    bulkPrice: '',
+    minQuantity: ''
+  });
 
   const products = [
     {
@@ -108,6 +132,8 @@ const Catalogue: React.FC = () => {
   ];
 
   const categories = ['All', 'Linens', 'Food & Beverage', 'Cleaning Supplies', 'Electronics'];
+  const currencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD'];
+  const locations = ['New York', 'London', 'Toronto', 'Sydney', 'Berlin'];
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -120,118 +146,157 @@ const Catalogue: React.FC = () => {
     console.log(`Toggle status for product ${productId}`);
   };
 
-  const renderProductCatalogue = () => (
+  const addVariantField = () => {
+    setNewVariant(prev => ({
+      ...prev,
+      variants: [...prev.variants, ''],
+      prices: [...prev.prices, '']
+    }));
+  };
+
+  const removeVariantField = (index: number) => {
+    setNewVariant(prev => ({
+      ...prev,
+      variants: prev.variants.filter((_, i) => i !== index),
+      prices: prev.prices.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateVariantField = (index: number, field: 'variants' | 'prices', value: string) => {
+    setNewVariant(prev => ({
+      ...prev,
+      [field]: prev[field].map((item, i) => i === index ? value : item)
+    }));
+  };
+
+  const handleAddVariant = () => {
+    console.log('Adding variant:', newVariant);
+    setIsAddVariantModalOpen(false);
+    setNewVariant({
+      productId: '',
+      variantType: '',
+      variants: [''],
+      prices: ['']
+    });
+  };
+
+  const handleAddPricing = () => {
+    console.log('Adding pricing:', newPricing);
+    setIsAddPricingModalOpen(false);
+    setNewPricing({
+      productId: '',
+      location: '',
+      currency: 'USD',
+      basePrice: '',
+      bulkPrice: '',
+      minQuantity: ''
+    });
+  };
+
+  const renderProductList = () => (
     <div className="space-y-6">
-      {/* Basic Profile Section */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="text-lg font-medium text-blue-900 mb-4">Step 1: Basic Profile</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-            <FileSpreadsheet className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <h4 className="text-sm font-medium text-blue-900 mb-1">Upload Product List</h4>
-            <p className="text-xs text-blue-700 mb-3">Upload Excel file with your products</p>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-              Choose Excel File
-            </button>
-          </div>
-          <div className="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-            <Upload className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <h4 className="text-sm font-medium text-blue-900 mb-1">Upload Product Catalogue</h4>
-            <p className="text-xs text-blue-700 mb-3">Type name and attach catalogue</p>
-            <input
-              type="text"
-              placeholder="Catalogue name"
-              className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm mb-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-              Attach File
-            </button>
-          </div>
+      {/* Search and Filters */}
+      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
         </div>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+        >
+          {categories.map(category => (
+            <option key={category} value={category.toLowerCase()}>{category}</option>
+          ))}
+        </select>
+        <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+          <Plus className="w-4 h-4" />
+          <span>Add Product</span>
+        </button>
       </div>
 
-      {/* Premium Profile Section */}
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-        <h3 className="text-lg font-medium text-purple-900 mb-4">Step 2: Premium Profile</h3>
-        
-        {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-          >
-            {categories.map(category => (
-              <option key={category} value={category.toLowerCase()}>{category}</option>
-            ))}
-          </select>
-          <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-            <Plus className="w-4 h-4" />
-            <span>Create Product</span>
-          </button>
-        </div>
-
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
-              <div className="aspect-square bg-gray-100 rounded-lg mb-3 overflow-hidden">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h4 className="font-medium text-gray-900 mb-1 text-sm">{product.name}</h4>
-              <p className="text-xs text-gray-600 mb-2">{product.category} • {product.subCategory}</p>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-purple-600">{product.price}</span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  product.status === 'active' 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-gray-100 text-gray-800'
-                }`}>
-                  {product.status}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-                <span>Stock: {product.stock}</span>
-                <span>Variants: {product.variants}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex space-x-1">
-                  <button className="p-1 text-gray-600 hover:bg-gray-100 rounded transition-colors">
-                    <Eye className="w-4 h-4" />
-                  </button>
-                  <button className="p-1 text-gray-600 hover:bg-gray-100 rounded transition-colors">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-                <button
-                  onClick={() => toggleProductStatus(product.id)}
-                  className="text-gray-600 hover:text-purple-600 transition-colors"
-                >
-                  {product.status === 'active' ? 
-                    <ToggleRight className="w-5 h-5 text-green-600" /> : 
-                    <ToggleLeft className="w-5 h-5" />
-                  }
-                </button>
-              </div>
-            </div>
-          ))}
+      {/* Products Table */}
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sub Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredProducts.map((product) => (
+                <tr key={product.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-10 h-10 rounded-lg object-cover mr-3"
+                      />
+                      <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{product.category}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{product.subCategory}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-semibold text-purple-600">{product.price}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      product.status === 'active' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {product.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{product.stock}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
+                      <button className="text-purple-600 hover:text-purple-900">
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button className="text-blue-600 hover:text-blue-900">
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button className="text-red-600 hover:text-red-900">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => toggleProductStatus(product.id)}
+                        className="text-gray-600 hover:text-purple-600 transition-colors"
+                      >
+                        {product.status === 'active' ? 
+                          <ToggleRight className="w-5 h-5 text-green-600" /> : 
+                          <ToggleLeft className="w-5 h-5" />
+                        }
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -241,7 +306,10 @@ const Catalogue: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <h3 className="text-lg font-medium text-gray-900">Product Variants</h3>
-        <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+        <button
+          onClick={() => setIsAddVariantModalOpen(true)}
+          className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+        >
           <Plus className="w-4 h-4" />
           <span>Add Variants</span>
         </button>
@@ -278,6 +346,107 @@ const Catalogue: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Add Variant Modal */}
+      {isAddVariantModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Add Product Variants</h2>
+                <button
+                  onClick={() => setIsAddVariantModalOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Select Product</label>
+                  <select
+                    value={newVariant.productId}
+                    onChange={(e) => setNewVariant({...newVariant, productId: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="">Choose a product</option>
+                    {products.map(product => (
+                      <option key={product.id} value={product.id}>{product.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Variant Type</label>
+                  <input
+                    type="text"
+                    value={newVariant.variantType}
+                    onChange={(e) => setNewVariant({...newVariant, variantType: e.target.value})}
+                    placeholder="e.g., Size, Color, Weight"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-sm font-medium text-gray-700">Variants & Prices</label>
+                    <button
+                      onClick={addVariantField}
+                      className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    >
+                      + Add Variant
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {newVariant.variants.map((variant, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <input
+                          type="text"
+                          value={variant}
+                          onChange={(e) => updateVariantField(index, 'variants', e.target.value)}
+                          placeholder="Variant name"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        <input
+                          type="text"
+                          value={newVariant.prices[index]}
+                          onChange={(e) => updateVariantField(index, 'prices', e.target.value)}
+                          placeholder="Price"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        {newVariant.variants.length > 1 && (
+                          <button
+                            onClick={() => removeVariantField(index)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={() => setIsAddVariantModalOpen(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddVariant}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Add Variants
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -285,7 +454,10 @@ const Catalogue: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <h3 className="text-lg font-medium text-gray-900">Product Pricing</h3>
-        <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+        <button
+          onClick={() => setIsAddPricingModalOpen(true)}
+          className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+        >
           <Plus className="w-4 h-4" />
           <span>Add Pricing</span>
         </button>
@@ -338,6 +510,118 @@ const Catalogue: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Add Pricing Modal */}
+      {isAddPricingModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900">Add Product Pricing</h2>
+                <button
+                  onClick={() => setIsAddPricingModalOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Select Product</label>
+                  <select
+                    value={newPricing.productId}
+                    onChange={(e) => setNewPricing({...newPricing, productId: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="">Choose a product</option>
+                    {products.map(product => (
+                      <option key={product.id} value={product.id}>{product.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                    <select
+                      value={newPricing.location}
+                      onChange={(e) => setNewPricing({...newPricing, location: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      <option value="">Select location</option>
+                      {locations.map(location => (
+                        <option key={location} value={location}>{location}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+                    <select
+                      value={newPricing.currency}
+                      onChange={(e) => setNewPricing({...newPricing, currency: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      {currencies.map(currency => (
+                        <option key={currency} value={currency}>{currency}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Base Price</label>
+                    <input
+                      type="text"
+                      value={newPricing.basePrice}
+                      onChange={(e) => setNewPricing({...newPricing, basePrice: e.target.value})}
+                      placeholder="0.00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Bulk Price</label>
+                    <input
+                      type="text"
+                      value={newPricing.bulkPrice}
+                      onChange={(e) => setNewPricing({...newPricing, bulkPrice: e.target.value})}
+                      placeholder="0.00"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Quantity</label>
+                  <input
+                    type="number"
+                    value={newPricing.minQuantity}
+                    onChange={(e) => setNewPricing({...newPricing, minQuantity: e.target.value})}
+                    placeholder="1"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={() => setIsAddPricingModalOpen(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddPricing}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Add Pricing
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -349,45 +633,8 @@ const Catalogue: React.FC = () => {
         <p className="text-sm text-gray-600 mt-1">Manage your product catalogue and pricing</p>
       </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'products'
-                ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            <Package className="w-4 h-4 inline mr-2" />
-            Product Catalogue
-          </button>
-          <button
-            onClick={() => setActiveTab('variants')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'variants'
-                ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Varieties ({variants.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('pricing')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'pricing'
-                ? 'border-purple-500 text-purple-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Pricing ({pricing.length})
-          </button>
-        </nav>
-      </div>
-
-      {/* Content */}
-      {activeTab === 'products' && renderProductCatalogue()}
+      {/* Content based on activeTab */}
+      {activeTab === 'products' && renderProductList()}
       {activeTab === 'variants' && renderVariants()}
       {activeTab === 'pricing' && renderPricing()}
     </div>
