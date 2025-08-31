@@ -10,12 +10,20 @@ import {
   Play,
   Pause,
   BarChart3,
-  Zap
+  Zap,
+  FileText,
+  X,
+  Plus
 } from 'lucide-react';
 
 const CSAI: React.FC = () => {
   const [customerServiceActive, setCustomerServiceActive] = useState(true);
-  const [salesAIActive, setSalesAIActive] = useState(false);
+  
+  const [trainingData, setTrainingData] = useState({
+    faqs: [{ question: '', answer: '' }],
+    companyInfo: '',
+    additionalInfo: ''
+  });
 
   const aiStats = [
     { label: 'Conversations Handled', value: '1,234', change: '+18%', icon: MessageSquare },
@@ -23,6 +31,34 @@ const CSAI: React.FC = () => {
     { label: 'Customer Satisfaction', value: '94%', change: '+5%', icon: Users },
     { label: 'Issues Resolved', value: '89%', change: '+12%', icon: CheckCircle }
   ];
+
+  const addFAQ = () => {
+    setTrainingData(prev => ({
+      ...prev,
+      faqs: [...prev.faqs, { question: '', answer: '' }]
+    }));
+  };
+
+  const removeFAQ = (index: number) => {
+    setTrainingData(prev => ({
+      ...prev,
+      faqs: prev.faqs.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateFAQ = (index: number, field: string, value: string) => {
+    setTrainingData(prev => ({
+      ...prev,
+      faqs: prev.faqs.map((faq, i) => 
+        i === index ? { ...faq, [field]: value } : faq
+      )
+    }));
+  };
+
+  const handleSaveTrainingData = () => {
+    console.log('Saving CS AI training data:', trainingData);
+    alert('Training data saved successfully!');
+  };
 
   const recentConversations = [
     {
@@ -90,7 +126,7 @@ const CSAI: React.FC = () => {
       </div>
 
       {/* AI Status Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
@@ -129,48 +165,6 @@ const CSAI: React.FC = () => {
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">Avg Response Time</span>
               <span className="font-semibold text-gray-900">2.3s</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Sales AI</h3>
-                <p className="text-sm text-gray-600">Automated sales assistance</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setSalesAIActive(!salesAIActive)}
-              className={`p-2 rounded-lg transition-colors ${
-                salesAIActive 
-                  ? 'bg-green-100 text-green-600 hover:bg-green-200' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {salesAIActive ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-            </button>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Status</span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                salesAIActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-              }`}>
-                {salesAIActive ? 'Active' : 'Inactive'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Leads Generated</span>
-              <span className="font-semibold text-gray-900">12</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Conversion Rate</span>
-              <span className="font-semibold text-gray-900">23%</span>
             </div>
           </div>
         </div>
@@ -246,38 +240,180 @@ const CSAI: React.FC = () => {
       </div>
 
       {/* AI Configuration */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Configuration</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-3">Response Settings</h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Auto-respond to common queries</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                </label>
+      <div className="space-y-6">
+        {/* AI Training Data */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Training Data</h3>
+          
+          <div className="space-y-6">
+            {/* FAQ Section */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-sm font-medium text-gray-700">Frequently Asked Questions</h4>
+                <button
+                  onClick={addFAQ}
+                  className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                >
+                  + Add FAQ
+                </button>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Escalate complex issues</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                </label>
+              <div className="space-y-4">
+                {trainingData.faqs.map((faq, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h5 className="text-sm font-medium text-gray-900">FAQ {index + 1}</h5>
+                      {trainingData.faqs.length > 1 && (
+                        <button
+                          onClick={() => removeFAQ(index)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Question</label>
+                        <input
+                          type="text"
+                          value={faq.question}
+                          onChange={(e) => updateFAQ(index, 'question', e.target.value)}
+                          placeholder="Enter frequently asked question"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Answer</label>
+                        <textarea
+                          value={faq.answer}
+                          onChange={(e) => updateFAQ(index, 'answer', e.target.value)}
+                          rows={3}
+                          placeholder="Enter the answer"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Send conversation summaries</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                </label>
+            </div>
+            
+            {/* Company Information */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Company Information</label>
+              <textarea
+                value={trainingData.companyInfo}
+                onChange={(e) => setTrainingData(prev => ({ ...prev, companyInfo: e.target.value }))}
+                rows={6}
+                placeholder="Enter detailed company information, policies, procedures, and other relevant details for AI training..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+            
+            {/* Additional Training Information */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Additional Training Information</label>
+              <textarea
+                value={trainingData.additionalInfo}
+                onChange={(e) => setTrainingData(prev => ({ ...prev, additionalInfo: e.target.value }))}
+                rows={4}
+                placeholder="Any additional information, guidelines, or context to help train the AI..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+            
+            {/* Document Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Upload Training Documents</label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-400 transition-colors">
+                <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-600 mb-2">Upload documents for AI training</p>
+                <p className="text-xs text-gray-500 mb-3">Supported formats: PDF, DOC, TXT</p>
+                <button className="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                  Choose Files
+                </button>
               </div>
             </div>
           </div>
-          <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-3">Performance Thresholds</h4>
-            <div className="space-y-3">
+          
+          <div className="mt-6">
+            <button
+              onClick={handleSaveTrainingData}
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Save Training Data
+            </button>
+          </div>
+        </div>
+        
+        {/* AI Configuration */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Configuration</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Response Settings</h4>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Auto-respond to common queries</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" defaultChecked className="sr-only peer" />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                  </label>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Escalate complex issues</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" defaultChecked className="sr-only peer" />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                  </label>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Send conversation summaries</span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Performance Thresholds</h4>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Minimum Confidence Level</label>
+                  <input
+                    type="range"
+                    min="50"
+                    max="100"
+                    defaultValue="75"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>50%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Max Response Time (seconds)</label>
+                  <input
+                    type="number"
+                    defaultValue="5"
+                    min="1"
+                    max="30"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6">
+            <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+              Save Configuration
+            </button>
+          </div>
+        </div>
+      </div>
               <div>
                 <label className="block text-xs text-gray-600 mb-1">Minimum Confidence Level</label>
                 <input
@@ -306,12 +442,6 @@ const CSAI: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="mt-6">
-          <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-            Save Configuration
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

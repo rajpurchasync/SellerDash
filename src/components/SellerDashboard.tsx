@@ -37,6 +37,7 @@ import Marketing from './sections/Marketing';
 import BusinessInfo from './sections/BusinessInfo';
 import CSAI from './sections/CSAI';
 import ToDos from './sections/ToDos';
+import Membership from './sections/Membership';
 
 interface SellerDashboardProps {
   profileStatus: 'pending' | 'approved' | 'rejected';
@@ -67,16 +68,17 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
 
   // Menu structure with three sections
   const menuSections: MenuSection[] = [
-    // Section 1
+    // Workspace Section
     {
+      title: 'Workspace',
       items: [
         { name: 'home', icon: Home, component: HomeSection },
         { name: 'todos', icon: CheckSquare, component: ToDos },
+        { name: 'todos', icon: CheckSquare, component: ToDos },
         { name: 'invited', icon: UserPlus, component: Invited },
-        { name: 'inbox', icon: Mail, component: Inbox }
       ]
     },
-    // Section 2
+    // Main Section
     {
       items: [
         { name: 'customers', icon: Users, component: Customers },
@@ -98,12 +100,13 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
           component: Profile,
           subItems: [
             { name: 'My Profile', component: MyProfile, subSection: 'my-profile' },
-            { name: 'Company Info', component: BusinessInfo, subSection: 'company-info' }
+            { name: 'Company Info', component: BusinessInfo, subSection: 'company-info' },
+            { name: 'Membership', component: Membership, subSection: 'membership' }
           ]
         }
       ]
     },
-    // Section 3 - Marketplace
+    // Marketplace Section
     {
       title: 'Marketplace',
       items: [
@@ -127,7 +130,15 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
           ]
         },
         { name: 'cs-ai', icon: Bot, component: CSAI },
-        { name: 'online-store', icon: Store, component: Marketplace }
+        { 
+          name: 'online-store', 
+          icon: Store, 
+          component: Marketplace,
+          subItems: [
+            { name: 'Store Overview', component: Marketplace, subSection: 'overview' },
+            { name: 'Store Settings', component: Marketplace, subSection: 'settings' }
+          ]
+        }
       ]
     }
   ];
@@ -161,15 +172,16 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
 
   const renderContent = () => {
     // Handle direct matches first
-    if (activeSection === 'home') return <HomeSection profileStatus={profileStatus} />;
+    if (activeSection === 'home') return <HomeSection profileStatus={profileStatus} isOnlineStoreConfigComplete={false} />;
     if (activeSection === 'invited') return <Invited />;
-    if (activeSection === 'inbox') return <Inbox />;
     if (activeSection === 'customers') return <Customers />;
     if (activeSection === 'messages') return <Messages />;
     if (activeSection === 'profile') return <Profile />;
     if (activeSection === 'cs-ai') return <CSAI />;
     if (activeSection === 'todos') return <ToDos />;
-    if (activeSection === 'online-store') return <Marketplace />;
+    if (activeSection === 'online-store') return <Marketplace subSection="overview" />;
+    if (activeSection === 'online-store-overview') return <Marketplace subSection="overview" />;
+    if (activeSection === 'online-store-settings') return <Marketplace subSection="settings" />;
 
     // Handle leads sub-sections
     if (activeSection === 'leads-rfq') return <Leads subSection="rfq" />;
@@ -180,6 +192,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     // Handle profile sub-sections
     if (activeSection === 'profile-my-profile') return <MyProfile />;
     if (activeSection === 'profile-company-info') return <BusinessInfo />;
+    if (activeSection === 'profile-membership') return <Membership />;
 
     // Handle catalogue sub-sections
     if (activeSection === 'catalogue-products') return <Catalogue activeTab="products" />;
@@ -193,7 +206,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     if (activeSection === 'marketing') return <Marketing />;
 
     // Default to home
-    return <HomeSection profileStatus={profileStatus} />;
+    return <HomeSection profileStatus={profileStatus} isOnlineStoreConfigComplete={false} />;
   };
 
   const renderMenuItem = (item: MenuItem, sectionIndex: number) => {
