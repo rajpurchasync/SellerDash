@@ -9,7 +9,8 @@ import {
   CheckCircle,
   Building,
   Package,
-  UserPlus
+  UserPlus,
+  Target
 } from 'lucide-react';
 
 interface HomeProps {
