@@ -47,23 +47,23 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
   const onboardingSteps = [
     { 
       key: 'businessInfo', 
-      title: 'Business Information', 
-      description: 'Complete your business profile',
+      title: 'My Profile', 
+      description: 'Complete your personal profile',
       icon: Building,
       completed: completedSteps.businessInfo
     },
     { 
       key: 'products', 
-      title: 'Products / Services', 
-      description: 'Add your product catalog',
-      icon: Package,
+      title: 'Company Info', 
+      description: 'Complete your company information',
+      icon: Building,
       completed: completedSteps.products
     },
     { 
       key: 'customers', 
-      title: 'Customers', 
-      description: 'Import your customer base',
-      icon: UserPlus,
+      title: 'Point of Sale', 
+      description: 'Configure your POS settings',
+      icon: Target,
       completed: completedSteps.customers
     }
   ];
@@ -92,31 +92,32 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
 
       {/* Sticky Profile Completion - Ultra Minimal */}
       {completionPercentage < 100 && (
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-blue-50 to-purple-50 border border-purple-200 rounded-lg p-4 shadow-sm">
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-blue-50 to-purple-50 border border-purple-200 rounded-lg p-4 sm:p-6 shadow-lg">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg">
+                <CheckCircle className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-gray-900">Complete Your Profile</h3>
+                <h3 className="text-lg font-bold text-gray-900">Complete Your Profile</h3>
                 <p className="text-sm text-gray-600">Get the most out of Purchasync</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-purple-600">{completionPercentage}%</div>
-              <div className="text-xs text-gray-500">Complete</div>
+              <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">{completionPercentage}%</div>
+              <div className="text-xs text-gray-500 font-medium">Complete</div>
             </div>
           </div>
           
           {/* Enhanced Progress Bar */}
           <div className="mb-4">
-            <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+            <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden shadow-inner">
               <div 
-                className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-500 ease-out relative"
+                className="h-full bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 rounded-full transition-all duration-700 ease-out relative shadow-sm"
                 style={{ width: `${completionPercentage}%` }}
               >
-                <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+                <div className="absolute inset-0 bg-white opacity-30 animate-pulse rounded-full"></div>
+                <div className="absolute right-0 top-0 h-full w-1 bg-white opacity-50 rounded-full"></div>
               </div>
             </div>
             <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -131,20 +132,20 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
               <button
                 key={step.key}
                 onClick={() => toggleStep(step.key)}
-                className={`p-3 rounded-lg border text-left transition-all duration-200 ${
+                className={`p-3 sm:p-4 rounded-xl border text-left transition-all duration-300 hover:scale-105 ${
                   step.completed 
-                    ? 'bg-green-50 border-green-200 text-green-800 shadow-sm' 
-                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-purple-200'
+                    ? 'bg-gradient-to-br from-green-50 to-green-100 border-green-200 text-green-800 shadow-md' 
+                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gradient-to-br hover:from-purple-50 hover:to-purple-100 hover:border-purple-300 shadow-sm'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <step.icon className="w-4 h-4" />
-                    <span className="text-xs font-medium">{step.title}</span>
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <step.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-xs sm:text-sm font-semibold">{step.title}</span>
                   </div>
-                  {step.completed && <CheckCircle className="w-4 h-4 text-green-600" />}
+                  {step.completed && <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />}
                 </div>
-                <p className="text-xs text-gray-500 mt-1 truncate">{step.description}</p>
+                <p className="text-xs text-gray-500 mt-2 leading-tight">{step.description}</p>
               </button>
             ))}
           </div>

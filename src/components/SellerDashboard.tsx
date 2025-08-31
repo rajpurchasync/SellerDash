@@ -95,8 +95,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
           icon: User, 
           component: Profile,
           subItems: [
-            { name: 'My Profile', component: MyProfile },
-            { name: 'Company Info', component: BusinessInfo }
+            { name: 'My Profile', component: MyProfile, subSection: 'my-profile' },
+            { name: 'Company Info', component: BusinessInfo, subSection: 'company-info' }
           ]
         }
       ]
@@ -115,8 +115,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
             { name: 'Pricing', component: Catalogue, activeTab: 'pricing' }
           ]
         },
-        { name: 'marketing', icon: Megaphone, component: Marketing },
-        { name: 'cs-ai', icon: Bot, component: CSAI }
+        { name: 'marketing', icon: Megaphone, component: Marketing }
       ]
     }
   ];
@@ -339,21 +338,21 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
         </main>
 
         {/* Mobile bottom navigation - Floating */}
-        <div className="lg:hidden fixed bottom-4 left-4 right-4 z-40">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 px-4 py-3">
+        <div className="lg:hidden fixed bottom-6 left-4 right-4 z-40">
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 px-4 py-3 backdrop-blur-sm bg-white/95">
             <div className="flex justify-around">
               {bottomNavItems.map((item) => (
                 <button
                   key={item.name}
                   onClick={() => handleMenuClick(item.name)}
-                  className={`flex flex-col items-center space-y-1 p-2 rounded-xl transition-all duration-200 ${
+                  className={`flex flex-col items-center space-y-1 p-3 rounded-xl transition-all duration-300 touch-target ${
                     activeSection === item.name
-                      ? 'text-purple-600 bg-purple-50 scale-105'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-purple-600 bg-gradient-to-br from-purple-50 to-purple-100 scale-110 shadow-lg'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:scale-105'
                   }`}
                 >
-                  <item.icon className="w-5 h-5" />
-                  <span className="text-xs font-medium capitalize">{item.name}</span>
+                  <item.icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <span className="text-xs font-semibold capitalize">{item.name}</span>
                 </button>
               ))}
             </div>

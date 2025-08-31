@@ -12,22 +12,25 @@ import {
   Smartphone,
   Edit,
   X,
-  Check
+  Check,
+  Save,
+  MapPin
 } from 'lucide-react';
 
 const MyProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState('personal');
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [isEditingPhone, setIsEditingPhone] = useState(false);
-  const [tempPhone, setTempPhone] = useState('');
+  const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false);
 
   const [personalInfo, setPersonalInfo] = useState({
     firstName: 'John',
     lastName: 'Smith',
     email: 'john.smith@example.com',
-    phone: '+1 (555) 123-4567',
-    country: 'United States'
+    phone: '555-123-4567',
+    countryCode: '+1',
+    country: 'United States',
+    position: 'Sales Manager'
   });
 
   const [securitySettings, setSecuritySettings] = useState({
@@ -42,6 +45,17 @@ const MyProfile: React.FC = () => {
   });
 
   const countries = [
+    { code: '+1', name: 'United States', flag: '🇺🇸' },
+    { code: '+1', name: 'Canada', flag: '🇨🇦' },
+    { code: '+44', name: 'United Kingdom', flag: '🇬🇧' },
+    { code: '+61', name: 'Australia', flag: '🇦🇺' },
+    { code: '+49', name: 'Germany', flag: '🇩🇪' },
+    { code: '+33', name: 'France', flag: '🇫🇷' },
+    { code: '+81', name: 'Japan', flag: '🇯🇵' },
+    { code: '+91', name: 'India', flag: '🇮🇳' }
+  ];
+
+  const countryOptions = [
     'United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France', 'Japan', 'India'
   ];
 
@@ -62,117 +76,174 @@ const MyProfile: React.FC = () => {
     alert('OTP sent to your registered phone number');
   };
 
-  const handleEditPhone = () => {
-    setTempPhone(personalInfo.phone);
-    setIsEditingPhone(true);
+  const handleSavePersonalInfo = () => {
+    setIsEditingPersonalInfo(false);
+    console.log('Saving personal info:', personalInfo);
   };
 
-  const handleSavePhone = () => {
-    setPersonalInfo(prev => ({ ...prev, phone: tempPhone }));
-    setIsEditingPhone(false);
-    setTempPhone('');
-  };
-
-  const handleCancelPhoneEdit = () => {
-    setIsEditingPhone(false);
-    setTempPhone('');
+  const handleCancelEdit = () => {
+    setIsEditingPersonalInfo(false);
+    // Reset to original values if needed
   };
 
   const renderPersonalInfo = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-          <input
-            type="text"
-            value={personalInfo.firstName}
-            onChange={(e) => handlePersonalInfoChange('firstName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-          <input
-            type="text"
-            value={personalInfo.lastName}
-            onChange={(e) => handlePersonalInfoChange('lastName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-        <input
-          type="email"
-          value={personalInfo.email}
-          onChange={(e) => handlePersonalInfoChange('email', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-          {!isEditingPhone ? (
-            <div className="flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-gray-50">
-              <span className="text-gray-900">{personalInfo.phone}</span>
-              <button
-                onClick={handleEditPhone}
-                className="p-1 text-purple-600 hover:bg-purple-100 rounded transition-colors"
-              >
-                <Edit className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-2">
-              <input
-                type="tel"
-                value={tempPhone}
-                onChange={(e) => setTempPhone(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-              <button
-                onClick={handleSavePhone}
-                className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <Check className="w-4 h-4" />
-              </button>
-              <button
-                onClick={handleCancelPhoneEdit}
-                className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-          <select
-            value={personalInfo.country}
-            onChange={(e) => handlePersonalInfoChange('country', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900">Personal Information</h3>
+        {!isEditingPersonalInfo ? (
+          <button
+            onClick={() => setIsEditingPersonalInfo(true)}
+            className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
           >
-            {countries.map(country => (
-              <option key={country} value={country}>{country}</option>
-            ))}
-          </select>
-        </div>
+            <Edit className="w-4 h-4" />
+            <span>Edit</span>
+          </button>
+        ) : (
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <button
+              onClick={handleSavePersonalInfo}
+              className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"
+            >
+              <Save className="w-4 h-4" />
+              <span>Save</span>
+            </button>
+            <button
+              onClick={handleCancelEdit}
+              className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+            >
+              <X className="w-4 h-4" />
+              <span>Cancel</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      <div className="pt-4">
-        <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-          Save Changes
-        </button>
-      </div>
+      {!isEditingPersonalInfo ? (
+        // Display Mode
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <p className="text-gray-900 font-medium">{personalInfo.firstName}</p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <p className="text-gray-900 font-medium">{personalInfo.lastName}</p>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <p className="text-gray-900 font-medium">{personalInfo.email}</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <p className="text-gray-900 font-medium">{personalInfo.countryCode} {personalInfo.phone}</p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Position</label>
+              <p className="text-gray-900 font-medium">{personalInfo.position}</p>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+            <p className="text-gray-900 font-medium">{personalInfo.country}</p>
+          </div>
+        </div>
+      ) : (
+        // Edit Mode
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+              <input
+                type="text"
+                value={personalInfo.firstName}
+                onChange={(e) => handlePersonalInfoChange('firstName', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+              <input
+                type="text"
+                value={personalInfo.lastName}
+                onChange={(e) => handlePersonalInfoChange('lastName', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+            <input
+              type="email"
+              value={personalInfo.email}
+              onChange={(e) => handlePersonalInfoChange('email', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <div className="flex space-x-2">
+                <select
+                  value={personalInfo.countryCode}
+                  onChange={(e) => handlePersonalInfoChange('countryCode', e.target.value)}
+                  className="w-20 px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                >
+                  {countries.map(country => (
+                    <option key={country.code + country.name} value={country.code}>
+                      {country.flag} {country.code}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  value={personalInfo.phone}
+                  onChange={(e) => handlePersonalInfoChange('phone', e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="555-123-4567"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
+              <input
+                type="text"
+                value={personalInfo.position}
+                onChange={(e) => handlePersonalInfoChange('position', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Your job title"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+            <select
+              value={personalInfo.country}
+              onChange={(e) => handlePersonalInfoChange('country', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              {countryOptions.map(country => (
+                <option key={country} value={country}>{country}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
     </div>
   );
 
   const renderSecurity = () => (
     <div className="space-y-6">
       {/* Change Password */}
-      <div className="bg-gray-50 p-4 rounded-lg">
+      <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
         <div className="space-y-4">
           <div>
@@ -225,7 +296,7 @@ const MyProfile: React.FC = () => {
 
           <button
             onClick={handleChangePassword}
-            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            className="w-full sm:w-auto bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
           >
             Change Password (Send OTP)
           </button>
@@ -233,9 +304,9 @@ const MyProfile: React.FC = () => {
       </div>
 
       {/* Two-Factor Authentication */}
-      <div className="bg-gray-50 p-4 rounded-lg">
+      <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Two-Factor Authentication</h3>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-3">
             <Shield className="w-5 h-5 text-green-600" />
             <div>
@@ -262,8 +333,8 @@ const MyProfile: React.FC = () => {
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-900">Notification Preferences</h3>
         
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-center justify-between">
+        <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-3">
               <Bell className="w-5 h-5 text-gray-600" />
               <div>
@@ -277,6 +348,7 @@ const MyProfile: React.FC = () => {
                 checked={notificationSettings.emailNotifications}
                 onChange={(e) => handleNotificationChange('emailNotifications', e.target.checked)}
                 className="sr-only peer"
+                defaultChecked
               />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
             </label>
@@ -285,7 +357,7 @@ const MyProfile: React.FC = () => {
       </div>
 
       <div className="pt-4">
-        <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+        <button className="w-full sm:w-auto bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
           Save Preferences
         </button>
       </div>
@@ -302,10 +374,10 @@ const MyProfile: React.FC = () => {
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
-        <nav className="flex space-x-8">
+        <nav className="flex space-x-4 sm:space-x-8 overflow-x-auto">
           <button
             onClick={() => setActiveTab('personal')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'personal'
                 ? 'border-purple-500 text-purple-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -316,7 +388,7 @@ const MyProfile: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('security')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'security'
                 ? 'border-purple-500 text-purple-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -327,7 +399,7 @@ const MyProfile: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('notifications')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
               activeTab === 'notifications'
                 ? 'border-purple-500 text-purple-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -340,7 +412,7 @@ const MyProfile: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
         {activeTab === 'personal' && renderPersonalInfo()}
         {activeTab === 'security' && renderSecurity()}
         {activeTab === 'notifications' && renderNotifications()}

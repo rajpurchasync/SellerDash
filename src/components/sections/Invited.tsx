@@ -1,34 +1,31 @@
 import React from 'react';
-import { UserPlus, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 const Invited: React.FC = () => {
   const invitations = [
     {
       id: 1,
-      companyName: 'Hotel Paradise Resort',
+      companyName: 'Hotel Paradise Resort - Miami, FL, USA',
       inviterName: 'Sarah Johnson',
       inviterRole: 'Procurement Manager',
       invitedDate: '2024-01-15',
-      status: 'pending',
-      message: 'We would like to invite you to participate in our supplier network for premium hospitality supplies.'
+      status: 'pending'
     },
     {
       id: 2,
-      companyName: 'Restaurant Chain ABC',
+      companyName: 'Restaurant Chain ABC - New York, NY, USA',
       inviterName: 'Mike Chen',
       inviterRole: 'Supply Chain Director',
       invitedDate: '2024-01-12',
-      status: 'accepted',
-      message: 'Join our preferred supplier program for fresh ingredients and kitchen equipment.'
+      status: 'accepted'
     },
     {
       id: 3,
-      companyName: 'Boutique Hotel Group',
+      companyName: 'Boutique Hotel Group - Los Angeles, CA, USA',
       inviterName: 'Emma Wilson',
       inviterRole: 'Operations Manager',
       invitedDate: '2024-01-10',
-      status: 'declined',
-      message: 'We are looking for luxury amenity suppliers for our hotel chain.'
+      status: 'declined'
     }
   ];
 
@@ -64,52 +61,48 @@ const Invited: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Invitations</h1>
-          <p className="text-sm text-gray-600 mt-1">Manage your supplier network invitations</p>
+          <p className="text-sm text-gray-600 mt-1">Manage your leads, business networks.</p>
         </div>
         <div className="flex items-center space-x-2 text-sm text-gray-500">
-          <UserPlus className="w-4 h-4" />
           <span>{invitations.filter(inv => inv.status === 'pending').length} pending</span>
         </div>
       </div>
 
       {/* Invitations List */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {invitations.map((invitation) => (
-          <div key={invitation.id} className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
-              <div className="flex-1">
-                <div className="flex items-start space-x-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <UserPlus className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900">{invitation.companyName}</h3>
-                    <p className="text-sm text-gray-600">
-                      Invited by {invitation.inviterName} • {invitation.inviterRole}
-                    </p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-500">{invitation.invitedDate}</span>
-                      {getStatusIcon(invitation.status)}
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(invitation.status)}`}>
-                        {invitation.status.charAt(0).toUpperCase() + invitation.status.slice(1)}
-                      </span>
-                    </div>
-                  </div>
+          <div key={invitation.id} className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">{invitation.companyName}</h3>
+                  <p className="text-sm text-gray-600">
+                    Invited by {invitation.inviterName} • {invitation.inviterRole}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-700 mt-4 ml-13">{invitation.message}</p>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${getStatusColor(invitation.status)}`}>
+                  {invitation.status.charAt(0).toUpperCase() + invitation.status.slice(1)}
+                </span>
               </div>
               
-              {invitation.status === 'pending' && (
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-4">
-                  <button className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
-                    Accept
-                  </button>
-                  <button className="px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors">
-                    Decline
-                  </button>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <Calendar className="w-4 h-4" />
+                  <span>{invitation.invitedDate}</span>
+                  {getStatusIcon(invitation.status)}
                 </div>
-              )}
+                
+                {invitation.status === 'pending' && (
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <button className="w-full sm:w-auto px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                      Accept
+                    </button>
+                    <button className="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors">
+                      Decline
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}
@@ -118,9 +111,11 @@ const Invited: React.FC = () => {
       {/* Empty State */}
       {invitations.length === 0 && (
         <div className="text-center py-12">
-          <UserPlus className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Calendar className="w-6 h-6 text-gray-400" />
+          </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No invitations yet</h3>
-          <p className="text-gray-600">You'll see supplier network invitations here when you receive them.</p>
+          <p className="text-gray-600">You'll see business network invitations here when you receive them.</p>
         </div>
       )}
     </div>
