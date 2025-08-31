@@ -361,12 +361,12 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
                   onClick={() => handleMenuClick(item.name)}
                   className={`flex flex-col items-center space-y-1 p-3 rounded-xl transition-all duration-300 touch-target ${
                     activeSection === item.name
-                      ? 'text-purple-600 bg-gradient-to-br from-purple-50 to-purple-100 scale-110 shadow-lg'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:scale-105'
+                      ? 'text-purple-600 bg-gradient-to-br from-purple-50 to-purple-100 scale-105 shadow-lg'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
-                  <item.icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                  <span className="text-xs font-semibold capitalize">{item.name}</span>
+                  <item.icon className="w-4 h-4" />
+                  <span className="text-xs font-medium capitalize">{item.name}</span>
                 </button>
               ))}
             </div>

@@ -88,8 +88,8 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
     <div className="space-y-4 sm:space-y-6">
       {/* Greeting */}
       <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg p-6 text-white">
-        <h1 className="text-2xl font-bold mb-2">{getGreeting()}, John! 👋</h1>
-        <p className="text-purple-100">Welcome to your dashboard.</p>
+        <h1 className="text-lg sm:text-2xl font-bold mb-2">{getGreeting()}, John! 👋</h1>
+        <p className="text-xs sm:text-sm text-purple-100">Welcome to your dashboard.</p>
       </div>
 
       {/* Sticky Profile Completion - Ultra Minimal */}
@@ -101,13 +101,13 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Complete Your Profile</h3>
-                <p className="text-sm text-gray-600">Get the most out of Purchasync</p>
+                <h3 className="text-sm sm:text-lg font-bold text-gray-900">Complete Your Profile</h3>
+                <p className="text-xs sm:text-sm text-gray-600">Get the most out of Purchasync</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">{completionPercentage}%</div>
-              <div className="text-xs text-gray-500 font-medium">Complete</div>
+              <div className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">{completionPercentage}%</div>
+              <div className="text-xs sm:text-xs text-gray-500 font-medium">Complete</div>
             </div>
           </div>
           
@@ -138,11 +138,11 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 sm:space-x-3">
                     <step.icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-xs sm:text-sm font-semibold">{step.title}</span>
+                    <span className="text-xs font-semibold">{step.title}</span>
                   </div>
                   {step.completed && <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />}
                 </div>
-                <p className="text-xs text-gray-500 mt-2 leading-tight">{step.description}</p>
+                <p className="text-xs text-gray-500 mt-1 leading-tight">{step.description}</p>
               </button>
             ))}
           </div>
@@ -156,11 +156,12 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
-                <span className="text-xs font-medium text-gray-600">{kpi.label}</span>
+                <span className="text-xs font-medium text-gray-600 hidden sm:block">{kpi.label}</span>
               </div>
             </div>
             <div className="mt-2">
-              <div className="text-lg font-bold text-gray-900">{kpi.value}</div>
+              <div className="text-sm sm:text-lg font-bold text-gray-900">{kpi.value}</div>
+              <div className="text-xs font-medium text-gray-600 sm:hidden">{kpi.label}</div>
               <div className={`text-xs ${kpi.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
                 {kpi.change}
               </div>
@@ -172,7 +173,7 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
       {/* Recent Activity - Clickable Rows */}
       <div className="bg-white rounded-lg border border-gray-200">
         <div className="p-4 border-b border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-900">Recent Activity</h3>
+          <h3 className="text-xs sm:text-sm font-semibold text-gray-900">Recent Activity</h3>
         </div>
         <div className="divide-y divide-gray-200">
           {recentActivity.map((activity) => (
@@ -188,7 +189,7 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
                     activity.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
                   }`} />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{activity.message}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-900">{activity.message}</p>
                     <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
                   </div>
                 </div>
@@ -203,19 +204,19 @@ const Home: React.FC<HomeProps> = ({ profileStatus }) => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
           <Users className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-900">Add Customer</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">Add Customer</span>
         </button>
         <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
           <Package className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-900">Add Product</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">Add Product</span>
         </button>
         <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
           <TrendingUp className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-900">View Analytics</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">View Analytics</span>
         </button>
         <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
           <MessageSquare className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-900">Messages</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">Messages</span>
         </button>
       </div>
     </div>

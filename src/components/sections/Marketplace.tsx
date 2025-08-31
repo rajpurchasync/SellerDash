@@ -182,22 +182,26 @@ const Marketplace: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
           <Store className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-900">Store Settings</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">Store Settings</span>
         </button>
         <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
           <TrendingUp className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-900">Analytics</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">Analytics</span>
         </button>
         <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
           <Users className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-900">Customers</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">Customers</span>
         </button>
         <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
           <Star className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-          <span className="text-sm font-medium text-gray-900">Reviews</span>
+          <span className="text-xs sm:text-sm font-medium text-gray-900">Reviews</span>
+        </button>
+        <button className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow text-center">
+          <Globe className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+          <span className="text-xs sm:text-sm font-medium text-gray-900">Online Store</span>
         </button>
       </div>
     </div>
