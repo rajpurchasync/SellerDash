@@ -131,15 +131,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
           ]
         },
         { name: 'cs-ai', icon: Bot, component: CSAI },
-        { 
-          name: 'online-store', 
-          icon: Store, 
-          component: Marketplace,
-          subItems: [
-            { name: 'Store Overview', component: Marketplace, subSection: 'overview' },
-            { name: 'Store Settings', component: Marketplace, subSection: 'settings' }
-          ]
-        }
+        { name: 'online-store', icon: Store, component: Marketplace }
       ]
     }
   ];
@@ -194,7 +186,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ profileStatus }) => {
     if (activeSection === 'profile-membership') return <Membership />;
 
     // Handle online store sub-sections
-    if (activeSection === 'profile-membership') return <Membership />;
+    if (activeSection === 'online-store') return <Marketplace />;
 
     // Handle catalogue sub-sections
     if (activeSection === 'catalogue-products') return <Catalogue activeTab="products" />;
